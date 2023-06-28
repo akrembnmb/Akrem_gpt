@@ -1,13 +1,16 @@
 import logo from './logo.svg'
 import './App.css'
-
+import {useState, useEffect} from 'react'
 const App = () => {
+  const [value ,setValue] = useState('')
+  const [message ,setMessage] = useState(null)
+  
 
   const getMessages= async() =>{
     const Options ={
       method:"POST",
       body : JSON.stringify({
-        message:"hello how are you?"
+        message:value
       }),
       headers:{
         "Content-Type":"application/json"
@@ -17,13 +20,16 @@ const App = () => {
       const response = await fetch('http://localhost:8000/completions',Options)
       const data =  await response.json()
       
-      console.log(data)
+    
+      setMessage(data.choices[0].message)
 
     }catch(error){
       console.error(error)
     }
-   
+
   }
+  console.log(value)
+  //console.log(message)
   return (
     <div className="app">
       <section className='side-bar'>
@@ -43,7 +49,10 @@ const App = () => {
         </ul>
         <div className='bottom-section'>
           <div className='input-container'>
-            <input/>
+          <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
             <div id="submit" onClick={getMessages}>➢</div>
             
           </div>
