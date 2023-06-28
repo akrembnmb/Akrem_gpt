@@ -2,9 +2,23 @@ import logo from './logo.svg'
 import './App.css'
 import {useState, useEffect} from 'react'
 const App = () => {
-  const [value ,setValue] = useState('')
+  const [value ,setValue] = useState(null)
   const [message ,setMessage] = useState(null)
+  const [previousChats , setPreviousChats] = useState([])
+  const [currentTitle , setCurrentTitle] = useState(null)
+  const createNewChat = () =>{
+    setMessage(null)
+    setValue("")
+    setCurrentTitle(null)
+  }
+const handleClick = (uniqueTitle)=>{
+  setCurrentTitle(uniqueTitle)
+  setMessage(null)
+  setValue("")
   
+}
+
+
 
   const getMessages= async() =>{
     const Options ={
@@ -28,24 +42,55 @@ const App = () => {
     }
 
   }
-  console.log(value)
-  //console.log(message)
+  useEffect( () =>{
+console.log(currentTitle,value,message)
+if(!currentTitle && value && message){
+  setCurrentTitle(value)
+}
+if(currentTitle && value && message)
+setPreviousChats(previousChats =>(
+[...previousChats,
+{
+  title: currentTitle,
+  role :"user",
+  content:value
+},{
+  title: currentTitle,
+  role :message.role,
+  content:message.content
+}
+]
+
+
+))
+  } ,[message,currentTitle])
+console.log(previousChats)
+
+const currentChat = previousChats.filter(previousChats => previousChats.title === currentTitle)
+const uniqueTitles = Array.from(new Set(previousChats.map(previousChat => previousChat.title)))
+console.log(uniqueTitles)
+
+
+
   return (
     <div className="app">
       <section className='side-bar'>
-        <button>
+        <button onClick={createNewChat}>
 + New Chat </button>
           <ul className='history'>
-              <li>Blab</li>
+            {uniqueTitles?.map((uniqueTitle , index) =><li key={index} onClick={() => handleClick(uniqueTitle)}>{uniqueTitle}</li> )} 
           </ul>
           <nav>
             <p>Made by AKrem</p>
           </nav>
       </section>
       <section className='main'>
-        <h1>AKremGPT</h1>
+        {!currentTitle &&<h1>AKremGPT</h1>}
         <ul className='feed'>
-
+        {currentChat?.map((chatMessage , index) =><li key={index}>
+          <p className='role'>{chatMessage.role}</p>
+          <p>{chatMessage.content}</p>
+        </li> )}
         </ul>
         <div className='bottom-section'>
           <div className='input-container'>
@@ -57,10 +102,7 @@ const App = () => {
             
           </div>
           <p className='info'>
-          Free Research Preview.
-           ChatGPT may produce inaccurate information about people, 
-           places, or facts. ChatGPT May 24 Version
-          </p>
+          This app developed by Akrem Benmbarek is a clone of ChatGPT and utilizes the OpenAI API. However, it does not provide the same functionalities as the original ChatGPT.          </p>
 
         </div>
       </section>
